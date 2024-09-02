@@ -1,0 +1,245 @@
+openapi: 3.0.3
+info:
+  title: Football Competition Management API
+  version: 1.0.0
+  description: API for managing football competitions, teams, and players.
+
+paths:
+  /competitions:
+    get:
+      summary: Retrieve a list of competitions.
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A paginated list of competitions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Competition'
+
+    post:
+      summary: Create a new competition.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Competition'
+      responses:
+        '201':
+          description: Competition created successfully.
+
+  /teams:
+    get:
+      summary: Retrieve a list of teams.
+      parameters:
+        - name: teamName
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter teams by their name.
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A paginated list of teams.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+
+    post:
+      summary: Create a new team.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamBasic'
+      responses:
+        '201':
+          description: Team created successfully.
+
+  /teams/{teamId}/players:
+    get:
+      summary: Retrieve a list of players for a specific team.
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: playerName
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter players by their name.
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: pageSize
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A paginated list of players.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Player'
+
+    post:
+      summary: Add players to a team.
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PlayerBasic'
+      responses:
+        '201':
+          description: Players added to the team successfully.
+
+  /players:
+    post:
+      summary: Create new player.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerBasic'
+      responses:
+        '201':
+          description: Player created successfully.
+
+components:
+  schemas:
+    Competition:
+      type: object
+      required:
+        - name
+        - location
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: LIGA
+        location:
+          type: string
+          example: SPAIN
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Real Madrid
+        slogan:
+          type: string
+          example: "Hala Madrid"
+        competitions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Competition'
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+
+    TeamBasic:
+      type: object
+      required:
+        - name
+        - slogan
+      properties:
+        name:
+          type: string
+          example: Real Madrid
+        slogan:
+          type: string
+          example: "Hala Madrid"
+
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        name:
+          type: string
+          example: Cristiano Ronaldo
+        number:
+          type: integer
+          example: 7
+        preferredFoot:
+          type: string
+          enum:
+            - Left
+            - Right
+          example: Right
+
+    PlayerBasic:
+      type: object
+      required:
+        - name
+        - number
+        - preferredFoot
+      properties:
+        name:
+          type: string
+          example: Cristiano Ronaldo
+        number:
+          type: integer
+          example: 7
+        preferredFoot:
+          type: string
+          enum:
+            - Left
+            - Right
+          example: Right
+
+
